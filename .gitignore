@@ -1,0 +1,10 @@
+.ipynb_checkpoints/
+.vscode/
+graficos/
+__pycache__/
+*.txt
+*.csv
+*.pdf
+keys.py
+etl.ipynb
+
