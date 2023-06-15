@@ -87,7 +87,7 @@ pip install pandas tqdm
 ## Exemplo
 
 ```
-year_date = ['2020', '2021', '2022']
+year_date = ['2020', '2021', '2022', '2023']
 path = 'C://Users//vinic//OneDrive//Documentos//Projetos AD//bovespa_b3//'
 name_file = 'COTAHIST_A'
 type_file = 'txt'

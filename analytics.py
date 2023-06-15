@@ -1,6 +1,12 @@
 import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
+
+## Setando configurações iniciais do dataframe
+# Definir a largura máxima de exibição das colunas
+#pd.set_option('display.max_columns', None)
+# Definir a largura máxima de exibição das linhas
+#pd.set_option('display.max_rows', None)
+# Definir o formato de exibição dos floats com duas casas decimais
+#pd.set_option('display.float_format', lambda x: '{:.2f}'.format(x/1000))
 
 def formatar_dados(arquivo_origem):
     print('Formatação iniciada...')
@@ -8,7 +14,7 @@ def formatar_dados(arquivo_origem):
     df = pd.read_csv(arquivo_origem)
 
     # Formatando os campos
-    df['data_pregao'] = pd.to_datetime(df['data_pregao'])
+    df['data_pregao'] = pd.to_datetime(df['data_pregao']).dt.strftime('%d/%m/%Y')
     df['preco_abertura'] = df['preco_abertura'].astype(float)
     df['preco_maximo'] = df['preco_maximo'].astype(float)
     df['preco_minimo'] = df['preco_minimo'].astype(float)
@@ -20,110 +26,65 @@ def formatar_dados(arquivo_origem):
     df = df.reset_index(drop=True)
 
     print('Formatação Concluída!')
-    print(df)
+
+    # Adicionar as colunas 'sigla_acao' e 'nome_acao' ao DataFrame, se necessário
+    if 'sigla_acao' not in df.columns:
+        df['sigla_acao'] = ''
+    if 'nome_acao' not in df.columns:
+        df['nome_acao'] = ''
     
     return df
 
+## Funções de análise de dados
 def analisar_media(df):
-    # Calcular a média do preço de fechamento
+    # Calcular a média do preço de fechamento ao longo do tempo
     media_fechamento = df['preco_fechamento'].mean()
     media_fechamento_formatada = round(media_fechamento, 2)
-    print("Média do preço de fechamento:", media_fechamento_formatada)
+    print("Média do preço de fechamento:")
+    print(media_fechamento_formatada)
 
-def maior_valor(df):
+def maior_valor(df, quantidade):
     # Ordernar por maior valor do preço máximo
-    maiores_valores = df.sort_values('preco_maximo', ascending=False)
-    print(maiores_valores)
+    maiores_valores = df.sort_values('preco_maximo', ascending=False).head(quantidade)
+    print('Preços máximos registrados: ')
+    print(maiores_valores.to_string(index=False))
 
-def plot_data_preco(df):
-    df.plot(x='data_pregao', y='preco_fechamento')
-    plt.xlabel('Data do Pregão')
-    plt.ylabel('Preço do Fechamento')
-    plt.show()
+def menor_valor(df):
+    # Ordenar por menor valor do preço mínimo
+    menores_valores = df.sort_values('preco_minimo', ascending=True).head()
+    print('Preços mínimos registrados:')
+    print(menores_valores.to_string(index=False))
 
-def plot_media_por_semestre(df):
-    # Adicionando coluna de semestre ao DataFrame
-    df['semestre'] = df['data_pregao'].dt.year.astype(str) + 'S' + ((df['data_pregao'].dt.month - 1) // 6 + 1).astype(str)
+def maior_volume(df, quantidade):
+    # Ordernar por maior volume de negócios
+    maiores_volumes = df.sort_values('volume_negocios', ascending=False).head(quantidade)
+    print('Maior volume de negócios registrados:')
+    print(maiores_volumes.to_string(index=False))
 
-    # Agrupando por semestre e calculando a média do preço de fechamento
-    df_media_semestre = df.groupby('semestre')['preco_fechamento'].mean().reset_index()
+def maior_negocio(df, quantidade):
+    # Ordenar o DataFrame pelo campo 'qtd_negocios' em ordem decrescente
+    df_sorted = df.sort_values('qtd_negocios', ascending=False)
 
-    # Plotando o gráfico de linha da média por semestre
-    df_media_semestre.plot(x='semestre', y='preco_fechamento', marker='o', linestyle='-', figsize=(10, 6))
-    plt.xlabel('Semestre')
-    plt.ylabel('Média do Preço de Fechamento')
-    plt.title('Média do Preço de Fechamento por Semestre')
-    plt.xticks(rotation=45)
-    plt.grid(True)
-    plt.show()
-
-def plot_dispersao(df):
-    plt.scatter(df['data_pregao'], df['preco_fechamento'])
-    plt.xlabel('Data de Pregão')
-    plt.ylabel('Preço de Fechamento')
-    plt.title('Dispersão: Data de Pregão vs Preço de Fechamento')
-    plt.xticks(rotation=45)
-    plt.show()
-
-def plot_dispersao_por_semestre(df):
-    # Adicionando coluna de semestre ao DataFrame
-    df['semestre'] = df['data_pregao'].dt.year.astype(str) + 'S' + ((df['data_pregao'].dt.month - 1) // 6 + 1).astype(str)
-
-    # Agrupando por semestre e calculando a média do preço de fechamento
-    df_media_semestre = df.groupby('semestre')['preco_fechamento'].mean().reset_index()
-
-    # Plotando o gráfico de dispersão por semestre
-    plt.scatter(df_media_semestre['semestre'], df_media_semestre['preco_fechamento'])
-    plt.xlabel('Semestre')
-    plt.ylabel('Média do Preço de Fechamento')
-    plt.title('Dispersão: Média do Preço de Fechamento por Semestre')
-    plt.xticks(rotation=45)
-    plt.show()
-
-def verificar_maior_queda(df):
-    # Adicionando coluna de semestre ao DataFrame
-    df['semestre'] = df['data_pregao'].dt.year.astype(str) + 'S' + ((df['data_pregao'].dt.month - 1) // 6 + 1).astype(str)
-
-    # Agrupando por semestre e calculando a diferença entre máximo e mínimo do preço de fechamento
-    df_queda_semestre = df.groupby('semestre')['preco_fechamento'].apply(lambda x: x.max() - x.min()).reset_index()
-
-    # Encontrando o semestre com a maior queda
-    semestre_maior_queda = df_queda_semestre.loc[df_queda_semestre['preco_fechamento'].idxmax()]
-
-    # Obtendo ação correspondente ao semestre com a maior queda
-    acao_maior_queda = df.loc[df['semestre'] == semestre_maior_queda['semestre']]
-
-    # Plotando o gráfico de linha da queda ao longo dos semestres com formatação de duas casas decimais
-    df_queda_semestre['preco_fechamento'] = (df_queda_semestre['preco_fechamento'] / 1000).round(2)
+    # Selecionar as n primeiras linhas do DataFrame ordenado
+    top_dates = df_sorted.head(quantidade)[['data_pregao', 'sigla_acao', 'nome_acao', 'preco_fechamento', 'qtd_negocios']].copy()
     
-    fig, ax = plt.subplots(figsize=(10, 6))
-    ax.plot(df_queda_semestre['semestre'], df_queda_semestre['preco_fechamento'], marker='o', linestyle='-')
+    # Formatando as datas
+    top_dates['data_pregao'] = top_dates['data_pregao']
 
-    plt.xlabel('Semestre')
-    plt.ylabel('Queda (Preço Máximo - Preço Mínimo)')
-    plt.title('Queda ao Longo dos Semestres')
-    plt.xticks(rotation=45)
-    plt.grid(True)
-
-    # Formatando os valores no eixo y com duas casas decimais
-    formatter = ticker.FormatStrFormatter('%.2f')
-    ax.yaxis.set_major_formatter(formatter)
-
-    plt.show()
-
-    return acao_maior_queda
-
-    return acao_maior_queda
+    return top_dates
 
 if __name__ == '__main__':
     # Chamando a função para formatar os dados da Bovespa
     df_formatado = formatar_dados('all_bovespa.csv')
+    print()
     analisar_media(df_formatado)
-    maior_valor(df_formatado)
-    plot_data_preco(df_formatado)
-    plot_dispersao(df_formatado)
-    plot_dispersao_por_semestre(df_formatado)
-    plot_media_por_semestre(df_formatado)
-    verificar_maior_queda(df_formatado)
-
-
+    print()
+    maior_valor(df_formatado, 10)
+    print()
+    menor_valor(df_formatado)
+    print()
+    maior_volume(df_formatado, 10)
+    print()
+    maiores_numeros_negocios = maior_negocio(df_formatado, 10)
+    print('Datas comos maiores números de negócios:') 
+    print (maiores_numeros_negocios.to_string(index=False))
