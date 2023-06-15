@@ -1,13 +1,5 @@
 import pandas as pd
 
-## Setando configurações iniciais do dataframe
-# Definir a largura máxima de exibição das colunas
-#pd.set_option('display.max_columns', None)
-# Definir a largura máxima de exibição das linhas
-#pd.set_option('display.max_rows', None)
-# Definir o formato de exibição dos floats com duas casas decimais
-#pd.set_option('display.float_format', lambda x: '{:.2f}'.format(x/1000))
-
 def formatar_dados(arquivo_origem):
     print('Formatação iniciada...')
     # Carregando o arquivo .csv
