@@ -88,7 +88,7 @@ pip install pandas tqdm
 
 ```
 year_date = ['2020', '2021', '2022', '2023']
-path = 'C://Users//vinic//OneDrive//Documentos//Projetos AD//bovespa_b3//'
+path = diretorio
 name_file = 'COTAHIST_A'
 type_file = 'txt'
 final_file = 'all_bovespa.csv'
@@ -96,4 +96,4 @@ final_file = 'all_bovespa.csv'
 concat_files(path, name_file, year_date, type_file, final_file)
 ```
 
-Neste exemplo, o código executará o processo de ETL para os anos de 2020, 2021 e 2022, lendo os arquivos de dados da Bovespa que seguem o formato especificado. Os arquivos serão filtrados, as datas serão convertidas e os valores numéricos serão ajustados. O resultado final será salvo no arquivo `all_bovespa.csv`.
+Neste exemplo, o código executará o processo de ETL para os anos de 2020, 2021, 2022 e 2023 (até o momento), lendo os arquivos de dados da Bovespa que seguem o formato especificado. Os arquivos serão filtrados, as datas serão convertidas e os valores numéricos serão ajustados. O resultado final será salvo no arquivo `all_bovespa.csv`.
