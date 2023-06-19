@@ -156,7 +156,7 @@ def exibir_resultado_titulo(titulo):
     print(titulo)
     print()
 
-if __name__ == '__main__':
+def main():
     # Chamando a função para formatar os dados da Bovespa
     df_formatado = formatar_dados('all_bovespa.csv')
 
@@ -176,4 +176,7 @@ if __name__ == '__main__':
     for titulo, funcao in analises:
         exibir_resultado_titulo(titulo)
         funcao()
+        
+if __name__ == '__main__':
+    main()
 

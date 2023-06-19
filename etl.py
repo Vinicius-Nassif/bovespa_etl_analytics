@@ -76,7 +76,7 @@ def concat_files(path, name_file, year_date, type_file, final_file):
             ## Barra de progresso
             pbar.set_postfix(file=f'{i+1}/{total_files}') # Atualiza o texto na barra de progresso
             pbar.set_description(f'Arquivo {y}') # Atualiza a descrição na barra de progresso
-            pbar.update(1)# Atualiza a barra de progresso
+            pbar.update(1) # Atualiza a barra de progresso
             print() # Quebra de linha
             print(f'Arquivo {y} processado...')
 
